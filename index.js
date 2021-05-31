@@ -13,7 +13,7 @@ const adminAuthorisation = require('./utils/adminAuthorisation');
 const userAuthorisation = require('./utils/userAuthorisation');
 const userRoute = require('./routes/user');
 const adminRoute = require('./routes/admin');
-var sendVerificationEmail = require('../functions/utils/emailUtil')
+var sendVerificationEmail = require('./utils/emailUtil')
 
 firebase.initializeApp(config);
 const port = process.env.PORT || 3000;
