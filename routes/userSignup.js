@@ -20,7 +20,7 @@ router.post("/userSignup", (request, response) => {
     const newUser = {
     email: request.body.email,
     password: request.body.password,
-    userName: request.body.username,
+      displayName: request.body.username,
     phoneNumber:request.body.phone,
   }
 
@@ -46,7 +46,7 @@ router.post("/userSignup", (request, response) => {
         const user = {
         email: request.body.email,
         password: request.body.password,
-        userName: request.body.username,
+        displayName: request.body.username,
         phoneNumber:request.body.phone,
         createdAt: new Date().toISOString(),
           userId
@@ -97,13 +97,7 @@ router.post("/userSignup", (request, response) => {
 }
 );
 
-router.get('/logout', (req, res) => {
-  firebase.auth().signOut().then(() => {
-    return res.status(200).json("successfully loggedout")
-  }).catch((error) => {
-    return res.status(500).json(error)
-  });
-})
+
 
 // router.post('/forgotPassword', (req, res) => {
 //   return res.status(500).json("not yet implemented");

@@ -34,7 +34,7 @@ router.post("/adminSignup", (request, response) => {
             // Set admin privilege on the user corresponding to uid.
             const adminDetails = {
                 email: request.body.email,
-                name: request.body.username,
+                displayName: request.body.username,
                 createdAt: new Date().toISOString(),
                 newAdminId
             };

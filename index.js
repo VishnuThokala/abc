@@ -3,7 +3,10 @@ const express = require('express');
 const firebase = require('firebase');
 const cors = require('cors');
 const app = express();
+const bodyParser = require('body-parser');
 app.use(cors({ origin: true }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 const { admin, db } = require('./utils/admin');
 const config = require("./utils/config");
@@ -16,7 +19,19 @@ const adminRoute = require('./routes/admin');
 var sendVerificationEmail = require('./utils/emailUtil')
 
 firebase.initializeApp(config);
+
 const port = process.env.PORT || 3000;
+
+
+app.get('/logout', (req, res) => {
+    console.log("called logout")
+    firebase.auth().signOut().then(() => {
+        return res.status(200).json("successfully loggedout")
+    }).catch((error) => {
+        return res.status(500).json(error)
+    });
+})
+
 
 app.use('/', userAuthRoute);
 app.use('/', adminAuthRoute);
@@ -24,13 +39,13 @@ app.use('/user', userAuthorisation, userRoute);
 app.use('/admin', adminAuthorisation, adminRoute);
 
 
-app.get('/hi', (req, res) => {
+app.get('/', (req, res) => {
+    console.log("hiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii")
     return res.status(200).json({ msg: 'hi its running!' });
 });
 
 
 app.post('/login', (req, res) => {
-    console.log(req.body)
     var user;
     var email = String(req.body.email);
     var password = String(req.body.password);
@@ -49,7 +64,16 @@ app.post('/login', (req, res) => {
             return data.user.getIdToken();
         })
         .then((token) => {
-            return res.json({ token, user });
+             admin
+                .auth()
+                .getUser(user.uid)
+                .then((userRecord) => {
+                    return res.status(200).json({ token,'user': userRecord });
+                })
+                .catch((error) => {
+                    return res.status(403).json('wrong credentials, please try again'+error);
+                });
+            
         })
         .catch((error) => {
             console.error(error);
@@ -58,34 +82,31 @@ app.post('/login', (req, res) => {
     return null;
 });
 
-var actionCodeSettings = {
-    url: 'https://localhost',
-    iOS: {
-        bundleId: 'com.example.ios'
-    },
-    android: {
-        packageName: 'com.example.android',
-        installApp: true,
-        minimumVersion: '12'
-    },
-    handleCodeInApp: true,
-    // When multiple custom dynamic link domains are defined, specify which
-    // one to use.
-    dynamicLinkDomain: "http://localhost:5000/webapp-92251/us-central1/app/forgotpassword"
-};
-app.get('/forgotpassword', (req, res) => {
-    const email = 'vishnureddynani11@gmail.com';
+app.post('/editProfile', (req, res) => {
+    const uid = "8YzXxMknBwcYtfPqQLh37Mgcdd53";
+    console.log(req.body);
     admin
         .auth()
-        .generatePasswordResetLink(email, actionCodeSettings)
-        .then((link) => {
-            // Construct password reset email template, embed the link and send
-            // using custom SMTP server.
-            return sendVerificationEmail(email, displayName, link);
+        .updateUser(uid, {
+            email: req.body.email,
+            phoneNumber: req.body.phoneNumber,
+            emailVerified: false,
+            // password: 'newPassword',
+            displayName: req.body.displayName,
+            photoURL: 'http://www.example.com/12345678/photo.png',
+            disabled: false,
+        })
+        .then((userRecord) => {
+            // See the UserRecord reference doc for the contents of userRecord.
+            console.log('Successfully updated user', userRecord.toJSON());
+
+            return res.status(200).json({ 'user': userRecord });
+
         })
         .catch((error) => {
-            console.log(error)
-            return res.status(403).json('You arent a existing user!' + error);
+            console.log('Error updating user:', error);
+            return res.status(403).json('wrong credentials, please try again' + error);
+
         });
 })
 
@@ -95,6 +116,6 @@ app.listen(port, (err) => {
         console.log(err)
     }
     else {
-        console.log("server running on port 3000")
+        console.log("server running on "+port)
     }
 })
