@@ -40,13 +40,11 @@ app.use('/admin', adminAuthorisation, adminRoute);
 
 
 app.get('/', (req, res) => {
-    console.log("hiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii")
     return res.status(200).json({ msg: 'hi its running!' });
 });
 
 
 app.post('/login', (req, res) => {
-    var user;
     var email = String(req.body.email);
     var password = String(req.body.password);
     if (email.length < 4) {
@@ -67,8 +65,8 @@ app.post('/login', (req, res) => {
              admin
                 .auth()
                 .getUser(user.uid)
-                .then((userRecord) => {
-                    return res.status(200).json({ token,'user': userRecord });
+                 .then((userRecord) => {
+                     return res.status(200).json({ token, 'customClaims': userRecord.customClaims, 'user': userRecord});
                 })
                 .catch((error) => {
                     return res.status(403).json('wrong credentials, please try again'+error);
@@ -83,23 +81,22 @@ app.post('/login', (req, res) => {
 });
 
 app.post('/editProfile', (req, res) => {
-    const uid = "8YzXxMknBwcYtfPqQLh37Mgcdd53";
-    console.log(req.body);
+    // const uid = "8YzXxMknBwcYtfPqQLh37Mgcdd53";
+    console.log(req.body)
+    console.log(String(req.body.phoneNumber))
     admin
         .auth()
-        .updateUser(uid, {
+        .updateUser(req.body.uid, {
             email: req.body.email,
-            phoneNumber: req.body.phoneNumber,
-            emailVerified: false,
+            phoneNumber:req.body.phoneNumber,
+            // emailVerified: false,
             // password: 'newPassword',
             displayName: req.body.displayName,
-            photoURL: 'http://www.example.com/12345678/photo.png',
+            photoURL: req.body.photoURL,
             disabled: false,
         })
         .then((userRecord) => {
             // See the UserRecord reference doc for the contents of userRecord.
-            console.log('Successfully updated user', userRecord.toJSON());
-
             return res.status(200).json({ 'user': userRecord });
 
         })

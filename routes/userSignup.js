@@ -10,7 +10,6 @@ const { admin, db } = require('../utils/admin')
 
 // Sign up
 router.post("/userSignup", (request, response) => {
-
 //   var file = request.files.file;
 //   const url = uploadFile(file);
 //   console.log(url);
