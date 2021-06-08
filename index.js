@@ -66,6 +66,7 @@ app.post('/login', (req, res) => {
                 .auth()
                 .getUser(user.uid)
                  .then((userRecord) => {
+                     console.log(userRecord.toJSON())
                      return res.status(200).json({ token, 'customClaims': userRecord.customClaims, 'user': userRecord});
                 })
                 .catch((error) => {
@@ -96,6 +97,8 @@ app.post('/editProfile', (req, res) => {
             disabled: false,
         })
         .then((userRecord) => {
+            console.log(userRecord.toJSON())
+
             // See the UserRecord reference doc for the contents of userRecord.
             return res.status(200).json({ 'user': userRecord });
 

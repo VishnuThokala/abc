@@ -27,8 +27,8 @@ module.exports = (req, res, next) => {
         .then(() => {
             // req.user.handle = data.docs[0].data().handle;
             // req.user.imageUrl = data.docs[0].data().imageUrl;
-            if (req.user.restaurant) {
-                console.log("user")
+            if (req.user.user) {
+                // console.log("user")
                 return next();
             } else {
                 // Show regular user UI.

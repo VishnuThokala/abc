@@ -2,11 +2,14 @@ const { admin, db } = require('./admin');
 // const firebase = require('firebase')
 module.exports = (req, res, next) => {
     let idToken;
-    if (
-        req.headers.authorization &&
-        req.headers.authorization.startsWith('Bearer ')
-    ) {
-        idToken = req.headers.authorization.split('Bearer ')[1];
+    if (req.headers.authorization) {
+        console.log("authorised header")
+        if (req.headers.authorization.startsWith('Bearer ')) {
+            idToken = req.headers.authorization.split('Bearer ')[1];
+        } else {
+            console.log("no bearer")
+
+        }
 
     } else {
         console.error('No token found');
