@@ -13,7 +13,7 @@ module.exports = (req, res, next) => {
 
     } else {
         console.error('No token found');
-        return res.status(403).json({ error: 'Unauthorized' });
+        return res.status(403).json({ 'msg': 'Unauthorized' });
     }
 
     admin
@@ -35,13 +35,13 @@ module.exports = (req, res, next) => {
                 return next();
             } else {
                 // Show regular user UI.
-                return res.status(403).json("unauthorised you cant access owner rights");
+                return res.status(403).json({ 'msg': "unauthorised you cant access owner rights" });
             }
 
 
         })
         .catch((err) => {
             console.error('Error while verifying token ', err);
-            return res.status(403).json({ "err": req.user });
+            return res.status(403).json({ "msg": err });
         });
 };
